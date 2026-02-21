@@ -1,0 +1,26 @@
+function sendMessage() {
+    let message = document.getElementById("message").value;
+
+    fetch("/chat", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({message: message})
+    })
+    .then(res => res.json())
+    .then(data => {
+        let chatbox = document.getElementById("chatbox");
+
+        chatbox.innerHTML += "<p><b>You:</b> " + message + "</p>";
+        chatbox.innerHTML += "<p><b>AI:</b> " + data.reply + "</p>";
+
+        if(data.steps){
+            data.steps.forEach(step => {
+                chatbox.innerHTML += "<p>• " + step + "</p>";
+            });
+            chatbox.innerHTML += `<a href="${data.redirect}" class="btn btn-success btn-sm mt-2">Proceed</a>`;
+        }
+
+        document.getElementById("message").value = "";
+        chatbox.scrollTop = chatbox.scrollHeight;
+    });
+}
